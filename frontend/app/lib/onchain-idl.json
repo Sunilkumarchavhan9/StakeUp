@@ -1,0 +1,1359 @@
+{
+  "address": "3HfJzm3qJawEJJhrFFn8aYSVYS8qT2B4s5JviAAyE6MB",
+  "metadata": {
+    "name": "onchain",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "archive_recipient",
+      "discriminator": [
+        223,
+        137,
+        182,
+        28,
+        70,
+        93,
+        16,
+        58
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_wallet"
+        },
+        {
+          "name": "recipient_registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  99,
+                  105,
+                  112,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "recipient_wallet"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_vault",
+      "discriminator": [
+        141,
+        103,
+        17,
+        126,
+        72,
+        75,
+        29,
+        29
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "relations": [
+            "goal"
+          ]
+        },
+        {
+          "name": "goal",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "goal"
+              }
+            ]
+          },
+          "relations": [
+            "goal"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_goal",
+      "discriminator": [
+        229,
+        63,
+        42,
+        239,
+        1,
+        226,
+        219,
+        196
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_wallet"
+        },
+        {
+          "name": "recipient_registry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  99,
+                  105,
+                  112,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "recipient_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "goal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "arg",
+                "path": "goal_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "goal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "verified_progress",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  101,
+                  100,
+                  45,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  101,
+                  115,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "goal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "goal_metadata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  97,
+                  108,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "goal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "goal_id",
+          "type": "u64"
+        },
+        {
+          "name": "stake_lamports",
+          "type": "u64"
+        },
+        {
+          "name": "target_total",
+          "type": "u64"
+        },
+        {
+          "name": "deadline_ts",
+          "type": "i64"
+        },
+        {
+          "name": "claim_window_secs",
+          "type": "i64"
+        },
+        {
+          "name": "duration_days",
+          "type": "u16"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "slug",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "target_label",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "initialize_platform",
+      "discriminator": [
+        119,
+        201,
+        101,
+        45,
+        75,
+        122,
+        89,
+        3
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "verifier",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "register_recipient",
+      "discriminator": [
+        46,
+        231,
+        207,
+        112,
+        215,
+        52,
+        195,
+        125
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_wallet"
+        },
+        {
+          "name": "recipient_registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  99,
+                  105,
+                  112,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "recipient_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "kind",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "set_recipient_active",
+      "discriminator": [
+        173,
+        246,
+        138,
+        63,
+        66,
+        177,
+        74,
+        173
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_wallet"
+        },
+        {
+          "name": "recipient_registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  99,
+                  105,
+                  112,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "recipient_wallet"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "active",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "settle_goal",
+      "discriminator": [
+        240,
+        49,
+        46,
+        252,
+        188,
+        251,
+        98,
+        21
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "owner",
+          "writable": true
+        },
+        {
+          "name": "recipient_wallet",
+          "writable": true
+        },
+        {
+          "name": "goal",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "goal"
+              }
+            ]
+          },
+          "relations": [
+            "goal"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "submit_progress",
+      "discriminator": [
+        196,
+        201,
+        47,
+        145,
+        54,
+        17,
+        33,
+        178
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "goal"
+          ]
+        },
+        {
+          "name": "goal",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "progress_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "submit_verified_progress",
+      "discriminator": [
+        34,
+        115,
+        188,
+        84,
+        79,
+        218,
+        214,
+        253
+      ],
+      "accounts": [
+        {
+          "name": "verifier",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "goal"
+        },
+        {
+          "name": "verified_progress",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  101,
+                  100,
+                  45,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  101,
+                  115,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "goal"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "progress_amount",
+          "type": "u64"
+        },
+        {
+          "name": "proof_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "source_type",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "update_verifier",
+      "discriminator": [
+        198,
+        42,
+        44,
+        241,
+        47,
+        104,
+        225,
+        255
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_verifier",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "verify_goal",
+      "discriminator": [
+        121,
+        20,
+        78,
+        105,
+        168,
+        85,
+        194,
+        85
+      ],
+      "accounts": [
+        {
+          "name": "verifier",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "goal",
+          "writable": true
+        },
+        {
+          "name": "verified_progress",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  101,
+                  100,
+                  45,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  101,
+                  115,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "goal"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "completed",
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "Goal",
+      "discriminator": [
+        163,
+        66,
+        166,
+        245,
+        130,
+        131,
+        207,
+        26
+      ]
+    },
+    {
+      "name": "GoalMetadata",
+      "discriminator": [
+        211,
+        184,
+        106,
+        38,
+        61,
+        167,
+        203,
+        145
+      ]
+    },
+    {
+      "name": "RecipientRegistry",
+      "discriminator": [
+        29,
+        87,
+        230,
+        103,
+        140,
+        210,
+        31,
+        180
+      ]
+    },
+    {
+      "name": "Vault",
+      "discriminator": [
+        211,
+        8,
+        232,
+        43,
+        2,
+        152,
+        117,
+        119
+      ]
+    },
+    {
+      "name": "VerifiedProgress",
+      "discriminator": [
+        151,
+        56,
+        15,
+        16,
+        229,
+        34,
+        4,
+        17
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "UnauthorizedAdmin",
+      "msg": "Unauthorized admin"
+    },
+    {
+      "code": 6001,
+      "name": "UnauthorizedVerifier",
+      "msg": "Unauthorized verifier"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidRecipientKind",
+      "msg": "Invalid recipient kind"
+    },
+    {
+      "code": 6003,
+      "name": "RecipientInactive",
+      "msg": "Recipient is inactive"
+    },
+    {
+      "code": 6004,
+      "name": "RecipientArchived",
+      "msg": "Recipient is archived"
+    },
+    {
+      "code": 6005,
+      "name": "RecipientMustBeInactive",
+      "msg": "Recipient must be inactive before archive"
+    },
+    {
+      "code": 6006,
+      "name": "RecipientAlreadyArchived",
+      "msg": "Recipient is already archived"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidAmount",
+      "msg": "Invalid amount"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidDeadline",
+      "msg": "Invalid deadline"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidClaimWindow",
+      "msg": "Invalid claim window"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidTargetTotal",
+      "msg": "Invalid target total"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidGoalTitle",
+      "msg": "Invalid goal title"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidGoalSlug",
+      "msg": "Invalid goal slug"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidGoalDescription",
+      "msg": "Invalid goal description"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidTargetLabel",
+      "msg": "Invalid target label"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidDurationDays",
+      "msg": "Invalid duration in days"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidProgressAmount",
+      "msg": "Invalid progress amount"
+    },
+    {
+      "code": 6017,
+      "name": "InvalidVerifiedSource",
+      "msg": "Invalid verified source"
+    },
+    {
+      "code": 6018,
+      "name": "GoalAlreadySettled",
+      "msg": "Goal already settled"
+    },
+    {
+      "code": 6019,
+      "name": "GoalAlreadyVerified",
+      "msg": "Goal already verified"
+    },
+    {
+      "code": 6020,
+      "name": "TooEarlyToVerify",
+      "msg": "Too early to verify"
+    },
+    {
+      "code": 6021,
+      "name": "GoalNotVerified",
+      "msg": "Goal not verified"
+    },
+    {
+      "code": 6022,
+      "name": "GoalNotSettleableYet",
+      "msg": "Goal is not settleable yet"
+    },
+    {
+      "code": 6023,
+      "name": "GoalDeadlinePassed",
+      "msg": "Goal deadline has passed"
+    },
+    {
+      "code": 6024,
+      "name": "ProgressUpdatesClosed",
+      "msg": "Progress updates are closed for this goal"
+    },
+    {
+      "code": 6025,
+      "name": "ProgressExceedsTarget",
+      "msg": "Progress exceeds the goal target"
+    },
+    {
+      "code": 6026,
+      "name": "VerifiedProgressExceedsTarget",
+      "msg": "Verified progress exceeds the goal target"
+    },
+    {
+      "code": 6027,
+      "name": "VerifiedProgressRequired",
+      "msg": "Verified progress evidence is required before completing the goal"
+    },
+    {
+      "code": 6028,
+      "name": "OnlyOwnerCanClaimCompleted",
+      "msg": "Only owner can claim completed goal within claim window"
+    },
+    {
+      "code": 6029,
+      "name": "InvalidRecipientWallet",
+      "msg": "Invalid recipient wallet"
+    },
+    {
+      "code": 6030,
+      "name": "InvalidOwner",
+      "msg": "Invalid owner"
+    },
+    {
+      "code": 6031,
+      "name": "InvalidVault",
+      "msg": "Invalid vault"
+    },
+    {
+      "code": 6032,
+      "name": "InvalidVerifiedProgressAccount",
+      "msg": "Invalid verified progress account"
+    },
+    {
+      "code": 6033,
+      "name": "MathOverflow",
+      "msg": "Math overflow"
+    },
+    {
+      "code": 6034,
+      "name": "InsufficientVaultBalance",
+      "msg": "Insufficient vault balance"
+    },
+    {
+      "code": 6035,
+      "name": "GoalNotSettled",
+      "msg": "Goal not settled"
+    }
+  ],
+  "types": [
+    {
+      "name": "Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "verifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Goal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "goal_id",
+            "type": "u64"
+          },
+          {
+            "name": "stake_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "target_total",
+            "type": "u64"
+          },
+          {
+            "name": "current_progress",
+            "type": "u64"
+          },
+          {
+            "name": "check_in_count",
+            "type": "u32"
+          },
+          {
+            "name": "last_check_in_at",
+            "type": "i64"
+          },
+          {
+            "name": "deadline_ts",
+            "type": "i64"
+          },
+          {
+            "name": "claim_window_secs",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "verified_at",
+            "type": "i64"
+          },
+          {
+            "name": "settled",
+            "type": "bool"
+          },
+          {
+            "name": "settled_at",
+            "type": "i64"
+          },
+          {
+            "name": "recipient_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "final_destination",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GoalMetadata",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "goal",
+            "type": "pubkey"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "slug",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "target_label",
+            "type": "string"
+          },
+          {
+            "name": "duration_days",
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RecipientRegistry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "kind",
+            "type": "u8"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "goal",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerifiedProgress",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "goal",
+            "type": "pubkey"
+          },
+          {
+            "name": "verified_progress",
+            "type": "u64"
+          },
+          {
+            "name": "verified_check_in_count",
+            "type": "u32"
+          },
+          {
+            "name": "last_verified_at",
+            "type": "i64"
+          },
+          {
+            "name": "last_source",
+            "type": "u8"
+          },
+          {
+            "name": "last_proof_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}
