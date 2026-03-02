@@ -65,7 +65,7 @@ export default function AchivementSec() {
             type="button"
             className="bg-[#00FFA6] px-4 py-2 text-base text-black md:px-5 md:py-2.5"
           >
-            Wallet connect
+            connect Wallet
           </button>
           <button
             type="button"

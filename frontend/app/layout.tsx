@@ -20,6 +20,9 @@ const spaceMono = Space_Mono({
 export const metadata: Metadata = {
   title: "StakeUp",
   description: "Commit funds to goals. Win discipline.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
