@@ -7,6 +7,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -222,6 +223,13 @@ type RegisterRecipientInput = {
 };
 
 const CLAIM_WINDOW_SECS = 24 * 60 * 60;
+const MAX_GOAL_TITLE_LEN = 64;
+const MAX_GOAL_DESCRIPTION_LEN = 280;
+const MAX_TARGET_LABEL_LEN = 16;
+const REFRESH_INTERVAL_MS = 30_000;
+const MIN_REFRESH_GAP_MS = 4_000;
+const RATE_LIMIT_COOLDOWN_MS = 15_000;
+const ACCOUNT_CHANGE_DEBOUNCE_MS = 1_500;
 // 8-byte discriminator + current Goal account payload (207 bytes).
 const GOAL_ACCOUNT_DATA_SIZE = 215;
 const VERIFIED_PROGRESS_ACCOUNT_DATA_SIZE = 94;
@@ -277,6 +285,11 @@ const kindLabel = (kind: number) =>
 const shortenAddress = (value: string) =>
   `${value.slice(0, 4)}...${value.slice(-4)}`;
 
+const isRpcRateLimited = (message: string) => {
+  const normalized = message.toLowerCase();
+  return normalized.includes("429") || normalized.includes("rate limit");
+};
+
 const createFallbackMetadata = (
   goalId: number,
 ): GoalMetadataRecord => ({
@@ -321,14 +334,34 @@ function useStakeupProgramState() {
   const [goals, setGoals] = useState<LiveGoal[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const refreshInFlightRef = useRef(false);
+  const queuedRefreshRef = useRef(false);
+  const lastRefreshAtRef = useRef(0);
+  const rateLimitedUntilRef = useRef(0);
+  const accountChangeRefreshTimerRef = useRef<number | null>(null);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (force = false) => {
     if (!program) {
       setConfig(null);
       setRecipients([]);
       setGoals([]);
       return;
     }
+
+    const nowMs = Date.now();
+    if (!force && nowMs < rateLimitedUntilRef.current) {
+      return;
+    }
+    if (!force && nowMs - lastRefreshAtRef.current < MIN_REFRESH_GAP_MS) {
+      return;
+    }
+    if (refreshInFlightRef.current) {
+      queuedRefreshRef.current = true;
+      return;
+    }
+
+    refreshInFlightRef.current = true;
+    lastRefreshAtRef.current = nowMs;
 
     const anchorProgram = program as unknown as AnchorProgramLike;
 
@@ -523,16 +556,30 @@ function useStakeupProgramState() {
       setRecipients(nextRecipients);
       setGoals(mappedGoals);
     } catch (nextError) {
-      setError(
-        nextError instanceof Error ? nextError.message : "Unable to refresh on-chain state",
-      );
+      const message =
+        nextError instanceof Error
+          ? nextError.message
+          : "Unable to refresh on-chain state";
+      if (isRpcRateLimited(message)) {
+        rateLimitedUntilRef.current = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+        setError("Devnet RPC rate limit reached. Retrying shortly.");
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
+      refreshInFlightRef.current = false;
+      if (queuedRefreshRef.current) {
+        queuedRefreshRef.current = false;
+        window.setTimeout(() => {
+          void refresh();
+        }, 500);
+      }
     }
   }, [connection, program]);
 
   useEffect(() => {
-    void refresh();
+    void refresh(true);
   }, [refresh]);
 
   useEffect(() => {
@@ -542,10 +589,10 @@ function useStakeupProgramState() {
 
     const intervalId = window.setInterval(() => {
       void refresh();
-    }, 10000);
+    }, REFRESH_INTERVAL_MS);
 
     const handleFocus = () => {
-      void refresh();
+      void refresh(true);
     };
 
     window.addEventListener("focus", handleFocus);
@@ -564,7 +611,13 @@ function useStakeupProgramState() {
     const goalSubscription = connection.onProgramAccountChange(
       program.programId,
       () => {
-        void refresh();
+        if (accountChangeRefreshTimerRef.current !== null) {
+          return;
+        }
+        accountChangeRefreshTimerRef.current = window.setTimeout(() => {
+          accountChangeRefreshTimerRef.current = null;
+          void refresh();
+        }, ACCOUNT_CHANGE_DEBOUNCE_MS);
       },
       "confirmed",
       [{ dataSize: GOAL_ACCOUNT_DATA_SIZE }],
@@ -573,13 +626,23 @@ function useStakeupProgramState() {
     const verifiedProgressSubscription = connection.onProgramAccountChange(
       program.programId,
       () => {
-        void refresh();
+        if (accountChangeRefreshTimerRef.current !== null) {
+          return;
+        }
+        accountChangeRefreshTimerRef.current = window.setTimeout(() => {
+          accountChangeRefreshTimerRef.current = null;
+          void refresh();
+        }, ACCOUNT_CHANGE_DEBOUNCE_MS);
       },
       "confirmed",
       [{ dataSize: VERIFIED_PROGRESS_ACCOUNT_DATA_SIZE }],
     );
 
     return () => {
+      if (accountChangeRefreshTimerRef.current !== null) {
+        window.clearTimeout(accountChangeRefreshTimerRef.current);
+        accountChangeRefreshTimerRef.current = null;
+      }
       void connection.removeProgramAccountChangeListener(goalSubscription);
       void connection.removeProgramAccountChangeListener(
         verifiedProgressSubscription,
@@ -812,6 +875,29 @@ function useStakeupProgramState() {
         throw new Error("Selected recipient is archived");
       }
 
+      const title = input.title.trim();
+      const description = input.description.trim();
+      const targetLabel = input.targetLabel.trim();
+
+      if (!title || title.length > MAX_GOAL_TITLE_LEN) {
+        throw new Error("Title is required and must be 64 characters or fewer");
+      }
+      if (!description || description.length > MAX_GOAL_DESCRIPTION_LEN) {
+        throw new Error("Description is required and must be 280 characters or fewer");
+      }
+      if (!targetLabel || targetLabel.length > MAX_TARGET_LABEL_LEN) {
+        throw new Error("Target label is required and must be 16 characters or fewer");
+      }
+      if (!Number.isFinite(input.targetTotal) || input.targetTotal <= 0) {
+        throw new Error("Target total must be greater than 0");
+      }
+      if (!Number.isFinite(input.stakeSol) || input.stakeSol <= 0) {
+        throw new Error("Stake must be greater than 0");
+      }
+      if (!Number.isFinite(input.durationDays) || input.durationDays <= 0) {
+        throw new Error("Duration must be at least 1 day");
+      }
+
       const anchorProgram = program as unknown as AnchorProgramLike;
       const goalId = Date.now();
       const stakeLamports = Math.round(input.stakeSol * LAMPORTS_PER_SOL);
@@ -832,10 +918,10 @@ function useStakeupProgramState() {
           new BN(deadlineTs),
           new BN(CLAIM_WINDOW_SECS),
           input.durationDays,
-          input.title,
+          title,
           goalSlug,
-          input.description,
-          input.targetLabel,
+          description,
+          targetLabel,
         )
         .accounts({
           owner: publicKey,
